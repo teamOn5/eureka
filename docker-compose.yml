@@ -1,0 +1,69 @@
+version: '3.8'
+
+networks:
+  spharos:
+    name: spharos
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: userdb
+    ports:
+      - "3306:3306"
+    networks:
+      - spharos
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - spharos
+
+  gateway-service:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    container_name: gateway-service
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - eureka-server
+    networks:
+      - spharos
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: user-service
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: userdb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      EUREKA_HOST: eureka-server
+    depends_on:
+      - eureka-server
+      - mysql
+    networks:
+      - spharos
