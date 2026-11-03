@@ -9,59 +9,54 @@ services:
     container_name: mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: userdb
+      MYSQL_ROOT_PASSWORD: "1234"
+      MYSQL_DATABASE: product
     ports:
       - "3306:3306"
     networks:
       - spharos
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1234"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  eureka-server:
+  eureka:
     build:
-      context: ./eureka-server
+      context: ./eureka
       dockerfile: Dockerfile
-    container_name: eureka-server
+    container_name: eureka
     restart: always
     ports:
       - "8761:8761"
     networks:
       - spharos
 
-  gateway-service:
+  gateway:
     build:
-      context: ./gateway-service
+      context: ./gateway
       dockerfile: Dockerfile
-    container_name: gateway-service
+    container_name: gateway
     restart: always
     ports:
       - "8000:8000"
     depends_on:
-      - eureka-server
+      - eureka
     networks:
       - spharos
 
-  user-service:
+  member-service:
     build:
-      context: ./user-service
+      context: ./member-service
       dockerfile: Dockerfile
-    container_name: user-service
+    container_name: member-service
     restart: always
-    ports:
-      - "8081:8081"
     environment:
-      MYSQL_HOST: mysql
-      MYSQL_PORT: 3306
-      MYSQL_DATABASE: userdb
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
-      EUREKA_HOST: eureka-server
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
     depends_on:
-      - eureka-server
+      - eureka
       - mysql
     networks:
       - spharos

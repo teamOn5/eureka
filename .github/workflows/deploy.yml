@@ -1,4 +1,4 @@
-name: MSA CI/CD (Eureka, Gateway, MySQL, User-Service)
+name: MSA CI/CD (Eureka, Gateway, MySQL, Member-Service)
 
 on:
   push:
