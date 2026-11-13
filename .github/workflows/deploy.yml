@@ -1,4 +1,4 @@
-name: MSA CI/CD (Eureka, Gateway, MySQL, Member-Service)
+name: Eureka Server CI/CD
 
 on:
   push:
@@ -25,10 +25,10 @@ jobs:
       - name: Build with Gradle
         run: gradlew.bat bootJar -x test --no-daemon
 
-      - name: Deploy Services with Docker Compose
+      - name: Deploy Eureka with Docker Compose
         run: |
           docker compose down --remove-orphans
           docker compose up -d --build
 
-      - name: Verify Running Containers
+      - name: Verify Running Container
         run: docker compose ps

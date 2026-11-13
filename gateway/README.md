@@ -1,1 +1,0 @@
-# skill-up-gateway
