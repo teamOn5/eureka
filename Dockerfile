@@ -1,11 +1,10 @@
-FROM eclipse-temurin:17-jdk
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 
-COPY . .
-
-RUN chmod +x gradlew && ./gradlew bootJar -x test
+ARG JAR_FILE=build/libs/*.jar
+COPY ${JAR_FILE} app.jar
 
 EXPOSE 8761
 
-CMD ["java", "-jar", "build/libs/eureka-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
