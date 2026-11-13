@@ -1,7 +1,8 @@
+name: eureka
+
 networks:
   spharos:
-    name: spharos
-    driver: bridge
+    external: true
 
 services:
   eureka:
